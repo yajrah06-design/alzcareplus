@@ -1,237 +1,103 @@
 <?php
 session_start();
+header('Content-Type: application/json');
 
-// Check if user is logged in
+require_once __DIR__ . '/../includes/database.php';
+
 if (!isset($_SESSION['user_id'])) {
-    header("Location: index.php");
-    exit();
+    http_response_code(401);
+    echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+    exit;
 }
 
-$user_name = $_SESSION['user_name'];
-$user_email = $_SESSION['user_email'];
-$user_role = $_SESSION['user_role'];
+$db = Database::getInstance();
+$activity = new ActivityManager();
 
-// Load activity log
-require_once __DIR__ . '/includes/database.php';
-$activityManager = new ActivityManager();
-$recentActivities = $activityManager->getRecentActivities(20);
+function body() {
+    $raw = file_get_contents('php://input');
+    $d = json_decode($raw, true);
+    return is_array($d) ? $d : [];
+}
 
-// Sample alert configuration data
-$alertConfigs = [
-    [
-        'alert_name' => 'High Heart Rate',
-        'condition' => 'Heart Rate > 100 Bpm',
-        'threshold' => '100 Bpm',
-        'notification_type' => 'SMS&App',
-        'recipients' => 'Family',
-        'status' => 'Active'
-    ],
-    [
-        'alert_name' => 'Missed Medication',
-        'condition' => 'Medication Not Taken Within 1 Hour',
-        'threshold' => '60 Min',
-        'notification_type' => 'SMS&App',
-        'recipients' => 'Caregiver',
-        'status' => 'Active'
-    ],
-    [
-        'alert_name' => 'GPS Boundary',
-        'condition' => 'Outside Safe Zone',
-        'threshold' => '500M Radius',
-        'notification_type' => 'SMS&App',
-        'recipients' => 'Family',
-        'status' => 'Active'
-    ],
-    [
-        'alert_name' => 'Low Activity',
-        'condition' => 'Steps < 500 In 12 Hours',
-        'threshold' => '500 Steps',
-        'notification_type' => 'SMS&App',
-        'recipients' => 'Family, Caregiver',
-        'status' => 'Active'
-    ]
-];
+try {
+    $method = $_SERVER['REQUEST_METHOD'];
+    $resource = $_GET['resource'] ?? 'config'; // config | history
 
-// Sample alert history data
-$alertHistory = [
-    [
-        'datetime' => 'Today, 08:32 AM',
-        'patient_id' => 'ASC 0001',
-        'alert_type' => 'High Heart Rate',
-        'status' => 'Critical',
-        'action' => 'Medication Adjusted - Monitoring'
-    ],
-    [
-        'datetime' => 'Today, 09:15 AM',
-        'patient_id' => 'ASC 0002',
-        'alert_type' => 'Missed Medication',
-        'status' => 'Warning',
-        'action' => 'Caregiver Notified - Pending'
-    ],
-    [
-        'datetime' => 'Yesterday, 03:45 PM',
-        'patient_id' => 'ASC 0003',
-        'alert_type' => 'GPS Boundary',
-        'status' => 'Critical',
-        'action' => 'Family Member Can\'t Locate The Patient'
-    ],
-    [
-        'datetime' => 'Yesterday, 11:20 AM',
-        'patient_id' => 'ASC 0004',
-        'alert_type' => 'Low Activity',
-        'status' => 'Warning',
-        'action' => 'Family Notified - No Action Needed'
-    ]
-];
-?>
+    if ($resource === 'config') {
+        switch ($method) {
+            case 'GET':
+                $rows = $db->query("SELECT * FROM alert_configurations ORDER BY created_at DESC");
+                echo json_encode(['success' => true, 'data' => $rows]);
+                break;
+            case 'POST':
+                $data = body();
+                $ok = $db->execute(
+                    "INSERT INTO alert_configurations (alert_name, `condition`, threshold, notification_type, recipients, status) VALUES (?,?,?,?,?,?)",
+                    [$data['alert_name'], $data['condition'], $data['threshold'], $data['notification_type'], $data['recipients'], $data['status'] ?? 'Active']
+                );
+                if ($ok) $activity->logActivity($_SESSION['user_id'], $_SESSION['user_name'], 'created', 'alert_config', $data['alert_name'], json_encode($data));
+                echo json_encode(['success' => $ok]);
+                break;
+            case 'PUT':
+                $data = body();
+                $ok = $db->execute(
+                    "UPDATE alert_configurations SET alert_name=?, `condition`=?, threshold=?, notification_type=?, recipients=?, status=? WHERE id=?",
+                    [$data['alert_name'], $data['condition'], $data['threshold'], $data['notification_type'], $data['recipients'], $data['status'] ?? 'Active', $data['id']]
+                );
+                if ($ok) $activity->logActivity($_SESSION['user_id'], $_SESSION['user_name'], 'updated', 'alert_config', (string)$data['id'], json_encode($data));
+                echo json_encode(['success' => $ok]);
+                break;
+            case 'DELETE':
+                $data = body();
+                $ok = $db->execute("DELETE FROM alert_configurations WHERE id=?", [$data['id']]);
+                if ($ok) $activity->logActivity($_SESSION['user_id'], $_SESSION['user_name'], 'deleted', 'alert_config', (string)$data['id']);
+                echo json_encode(['success' => $ok]);
+                break;
+            default:
+                http_response_code(405);
+                echo json_encode(['success' => false, 'error' => 'Method not allowed']);
+        }
+        exit;
+    }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alerts & Notifications - AlzCare+</title>
-    <link rel="stylesheet" href="assets/css/style.css?v=<?php echo time(); ?>">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <?php include 'includes/sidebar.php'; ?>
-        
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Header -->
-            <?php include 'includes/header.php'; ?>
-            
-            <!-- Alerts & Notifications Dashboard -->
-            <div class="content-card">
-                <div class="card-header">
-                    <h2><i class="fas fa-cog"></i> Alerts Configuration</h2>
-                    <div class="card-actions">
-                        <input id="configSearch" type="text" class="form-input" placeholder="Search alerts..." style="max-width: 240px;" />
-                        <button class="btn btn-primary" id="addAlertBtn">
-                            <i class="fas fa-plus"></i>
-                            Add New Alert
-                        </button>
-                    </div>
-                </div>
-                <div class="table-container">
-                    <table class="data-table" id="configsTable">
-                        <thead>
-                            <tr>
-                                <th style="min-width:180px">Alert</th>
-                                <th>Condition</th>
-                                <th>Threshold</th>
-                                <th>Notify</th>
-                                <th>Recipients</th>
-                                <th>Status</th>
-                                <th>Updated</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="configsTbody"></tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- Recent Activities -->
-            <div class="content-card">
-                <div class="card-header">
-                    <h2><i class="fas fa-list"></i> Recent Activities</h2>
-                </div>
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>TIME</th>
-                                <th>USER</th>
-                                <th>ACTION</th>
-                                <th>ENTITY</th>
-                                <th>ID</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($recentActivities as $act): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($act['created_at']); ?></td>
-                                    <td><?php echo htmlspecialchars($act['user_name']); ?></td>
-                                    <td>
-                                        <span class="status-badge <?php echo $act['action'] === 'deleted' ? 'status-danger' : ($act['action'] === 'updated' ? 'status-warning' : 'status-normal'); ?>">
-                                            <?php echo htmlspecialchars(ucfirst($act['action'])); ?>
-                                        </span>
-                                    </td>
-                                    <td><?php echo htmlspecialchars(ucfirst($act['entity'])); ?></td>
-                                    <td><?php echo htmlspecialchars($act['entity_id']); ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+    // history
+    switch ($method) {
+        case 'GET':
+            $limit = (int)($_GET['limit'] ?? 100);
+            $status = $_GET['status'] ?? '';
+            $sql = "SELECT * FROM alert_history";
+            $params = [];
+            if ($status) { $sql .= " WHERE status=?"; $params[] = $status; }
+            $sql .= " ORDER BY triggered_at DESC LIMIT ?"; $params[] = $limit;
+            $rows = $db->query($sql, $params);
+            echo json_encode(['success' => true, 'data' => $rows]);
+            break;
+        case 'POST':
+            $data = body();
+            $ok = $db->execute(
+                "INSERT INTO alert_history (patient_id, alert_type, status, action_taken) VALUES (?,?,?,?)",
+                [$data['patient_id'], $data['alert_type'], $data['status'] ?? 'Warning', $data['action_taken'] ?? '']
+            );
+            echo json_encode(['success' => $ok]);
+            break;
+        case 'PUT':
+            $data = body();
+            if (($data['action'] ?? '') === 'ack') {
+                $ok = $db->execute("UPDATE alert_history SET acknowledged_by=?, acknowledged_at=NOW() WHERE id=?", [$_SESSION['user_name'], $data['id']]);
+            } else if (($data['action'] ?? '') === 'resolve') {
+                $ok = $db->execute("UPDATE alert_history SET resolved_by=?, resolved_at=NOW() WHERE id=?", [$_SESSION['user_name'], $data['id']]);
+            } else {
+                $ok = false;
+            }
+            echo json_encode(['success' => $ok]);
+            break;
+        default:
+            http_response_code(405);
+            echo json_encode(['success' => false, 'error' => 'Method not allowed']);
+    }
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+}
 
-            <!-- Alert History -->
-            <div class="content-card">
-                <div class="card-header">
-                    <h2><i class="fas fa-history"></i> Alerts History</h2>
-                    <select class="form-select" id="historyRange">
-                        <option value="7">Last 7 days</option>
-                        <option value="30" selected>Last 30 days</option>
-                        <option value="90">Last 90 days</option>
-                    </select>
-                </div>
-                <div class="table-container">
-                    <table class="data-table" id="historyTable">
-                        <thead>
-                            <tr>
-                                <th>DATE&TIME</th>
-                                <th>PATIENT ID</th>
-                                <th>ALERT TYPE</th>
-                                <th>STATUS</th>
-                                <th>ACTION</th>
-                            </tr>
-                        </thead>
-                        <tbody id="historyTbody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <style>
-        .form-select {
-            padding: 8px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 14px;
-            background-color: white;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .btn-secondary {
-            background-color: #6b7280;
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #4b5563;
-        }
-        
-        .btn-danger {
-            background-color: #dc2626;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background-color: #b91c1c;
-        }
-    </style>
-    
-    <script src="assets/js/alerts.js"></script>
-</body>
-</html> 
+
