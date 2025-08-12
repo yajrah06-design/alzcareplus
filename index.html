@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlzcarePlus - Healthcare Management System</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        .cta-section {
+            text-align: center;
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .demo-links {
+            margin-top: 30px;
+        }
+        .demo-links a {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            background: #f8f9fa;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 25px;
+            border: 2px solid #667eea;
+            transition: all 0.3s ease;
+        }
+        .demo-links a:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AlzcarePlus</h1>
+            <p>Comprehensive Healthcare Management System for Alzheimer's Patients</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>🏥 Patient Management</h3>
+                <p>Comprehensive patient profiles with medical history, contact information, and care plans. Track patient progress and maintain detailed health records.</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>💊 Medication Tracking</h3>
+                <p>Advanced medication management system with dosage schedules, reminders, and interaction warnings. Ensure patients never miss their medications.</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>📊 Health Monitoring</h3>
+                <p>Real-time health data tracking including vital signs, symptoms, and behavioral patterns. Monitor patient health trends over time.</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>📍 GPS Tracking</h3>
+                <p>Location monitoring for patient safety with geofencing alerts and real-time tracking. Ensure patients stay within safe boundaries.</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>🚨 Alert System</h3>
+                <p>Intelligent alert system for medication reminders, health emergencies, and location-based notifications. Keep caregivers informed 24/7.</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>📈 Analytics Dashboard</h3>
+                <p>Comprehensive reporting and analytics for healthcare providers. Track patient outcomes, medication effectiveness, and care quality metrics.</p>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h2>Experience AlzcarePlus</h2>
+            <p>This is a demo version showcasing the user interface and features of our healthcare management system.</p>
+            
+            <div class="demo-links">
+                <a href="dashboard-demo.html">Dashboard Demo</a>
+                <a href="patient-profiles-demo.html">Patient Profiles</a>
+                <a href="medication-tracker-demo.html">Medication Tracker</a>
+                <a href="health-monitoring-demo.html">Health Monitoring</a>
+            </div>
+            
+            <p style="margin-top: 30px; color: #666;">
+                <strong>Note:</strong> This is a static demo. The full application includes PHP backend functionality, database integration, and real-time features.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Add smooth scrolling and interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.feature-card');
+            
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.style.animation = 'fadeInUp 0.6s ease forwards';
+            });
+        });
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            .feature-card {
+                opacity: 0;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

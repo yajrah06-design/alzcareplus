@@ -1,0 +1,12 @@
+{
+  "name": "alzcareplus",
+  "version": "1.0.0",
+  "description": "A comprehensive healthcare management system designed for monitoring Alzheimer's patients with real-time health tracking, medication management, and GPS monitoring capabilities.",
+  "scripts": {
+    "dev": "C:\\xampp\\php\\php.exe -S 0.0.0.0:3000",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["healthcare", "alzheimer", "php", "web-application"],
+  "author": "",
+  "license": "ISC"
+}

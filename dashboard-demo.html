@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AlzcarePlus Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 2rem;
+            opacity: 0.9;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 1;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .dashboard-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .dashboard-header h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .dashboard-header p {
+            color: #666;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+        
+        .main-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .patient-list {
+            list-style: none;
+        }
+        
+        .patient-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .patient-item:last-child {
+            border-bottom: none;
+        }
+        
+        .patient-info h4 {
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+        
+        .patient-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-active {
+            background: #e8f5e8;
+            color: #2d5a2d;
+        }
+        
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">AlzcarePlus</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="dashboard-demo.html">Dashboard</a>
+            <a href="patient-profiles-demo.html">Patients</a>
+            <a href="medication-tracker-demo.html">Medications</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Home</a>
+        
+        <div class="dashboard-header">
+            <h1>Healthcare Dashboard</h1>
+            <p>Monitor patient health, medications, and system alerts in real-time</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">24</div>
+                <div class="stat-label">Active Patients</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">156</div>
+                <div class="stat-label">Medications Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Alerts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">98%</div>
+                <div class="stat-label">System Uptime</div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="main-content">
+                <h3 class="section-title">Recent Patient Activity</h3>
+                <ul class="patient-list">
+                    <li class="patient-item">
+                        <div class="patient-info">
+                            <h4>Sarah Johnson</h4>
+                            <p>Medication reminder - Donepezil 10mg due in 2 hours</p>
+                        </div>
+                        <span class="status-badge status-active">On Track</span>
+                    </li>
+                    <li class="patient-item">
+                        <div class="patient-info">
+                            <h4>Michael Chen</h4>
+                            <p>Health check completed - Blood pressure elevated</p>
+                        </div>
+                        <span class="status-badge status-warning">Monitor</span>
+                    </li>
+                    <li class="patient-item">
+                        <div class="patient-info">
+                            <h4>Emma Davis</h4>
+                            <p>GPS alert - Patient left designated area</p>
+                        </div>
+                        <span class="status-badge status-warning">Alert</span>
+                    </li>
+                    <li class="patient-item">
+                        <div class="patient-info">
+                            <h4>Robert Wilson</h4>
+                            <p>Medication administered - Memantine 20mg</p>
+                        </div>
+                        <span class="status-badge status-active">Completed</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar">
+                <h3 class="section-title">Quick Actions</h3>
+                <div style="margin-bottom: 1rem;">
+                    <button style="width: 100%; padding: 0.75rem; background: #667eea; color: white; border: none; border-radius: 5px; margin-bottom: 0.5rem; cursor: pointer;">Add New Patient</button>
+                    <button style="width: 100%; padding: 0.75rem; background: #28a745; color: white; border: none; border-radius: 5px; margin-bottom: 0.5rem; cursor: pointer;">Schedule Medication</button>
+                    <button style="width: 100%; padding: 0.75rem; background: #ffc107; color: #333; border: none; border-radius: 5px; margin-bottom: 0.5rem; cursor: pointer;">Generate Report</button>
+                </div>
+
+                <h3 class="section-title">System Status</h3>
+                <div style="color: #666; font-size: 0.9rem;">
+                    <p>✅ Database: Connected</p>
+                    <p>✅ GPS Tracking: Active</p>
+                    <p>✅ Alert System: Online</p>
+                    <p>✅ Backup: Last 2 hours ago</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            const statCards = document.querySelectorAll('.stat-card');
+            
+            statCards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.style.animation = 'fadeInUp 0.6s ease forwards';
+            });
+        });
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            .stat-card {
+                opacity: 0;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
